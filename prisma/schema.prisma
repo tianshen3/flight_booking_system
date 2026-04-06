@@ -7,6 +7,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id            Int @id @default(autoincrement())
+  email         String @unique
+  password      String
+  refreshToken  String?
+  role          Role @default(CUSTOMER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookings  Booking[] 
+}
+
+model Booking {
+  id           Int      @id @default(autoincrement())
+  bookingref   String   @unique
+  userId       Int      
+  flightId     Int
+  status       BookingStatus  @default(PENDING)
+  seatNumber   String?
+  totalPrice   Float
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  //Relations
+  user         User      @relation(fields: [userId], references: [id])
+  flight       Flight    @relation(fields: [flightId], references: [id])
+}
+
 model Airport {
   id        Int     @id @default(autoincrement())
   code      String  @unique  // e.g. DEL, BOM
@@ -42,4 +81,5 @@ model Flight {
   //Relations
   source         Airport @relation("SourceAirport", fields: [sourceId], references: [id])
   destination    Airport @relation("DestinationAirport", fields: [destinationId], references: [id])
+  bookings       Booking[]
 }
