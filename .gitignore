@@ -4,3 +4,6 @@ dist/
 build/
 coverage/
 .prisma/
+
+PLANNING.md
+TASKS.md
