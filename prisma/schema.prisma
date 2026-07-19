@@ -7,79 +7,99 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  CUSTOMER
-  ADMIN
-}
-
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-}
-
 model User {
-  id            Int @id @default(autoincrement())
-  email         String @unique
-  password      String
-  refreshToken  String?
-  role          Role @default(CUSTOMER)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  bookings  Booking[] 
-}
-
-model Booking {
-  id           Int      @id @default(autoincrement())
-  bookingref   String   @unique
-  userId       Int      
-  flightId     Int
-  status       BookingStatus  @default(PENDING)
-  seatNumber   String?
-  totalPrice   Float
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  //Relations
-  user         User      @relation(fields: [userId], references: [id])
-  flight       Flight    @relation(fields: [flightId], references: [id])
-}
-
-model Airport {
-  id        Int     @id @default(autoincrement())
-  code      String  @unique  // e.g. DEL, BOM
+  id        Int        @id @default(autoincrement())
   name      String
-  city      String
-  country   String
-  createdAt DateTime @default(now())
+  email     String     @unique
+  clvScore  Int        @map("clv_score")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  bookings  Booking[]
+  waitlist  Waitlist[]
 
-  // Opposite relation fields for Flight
-  flightsFrom Flight[] @relation("SourceAirport")
-  flightsTo   Flight[] @relation("DestinationAirport")
+  @@index([email])
+  @@index([clvScore])
+  @@map("users")
 }
 
 model Flight {
-  id            Int @id @default(autoincrement())
-  
-  flightNumber  String
-  airline       String
+  id            Int        @id @default(autoincrement())
+  flightNumber  String     @unique @map("flight_number")
+  origin        String
+  destination   String
+  departureTime DateTime   @map("departure_time")
+  arrivalTime   DateTime   @map("arrival_time")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  bookings      Booking[]
+  seats         Seat[]
+  waitlist      Waitlist[]
 
-  departureTime String
-  arrivalTime   String
+  @@index([flightNumber])
+  @@index([departureTime])
+  @@map("flights")
+}
 
-  sourceId      Int
-  destinationId Int
+model Seat {
+  id         Int        @id @default(autoincrement())
+  flightId   Int        @map("flight_id")
+  seatNumber String     @map("seat_number")
+  status     SeatStatus @default(AVAILABLE)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  bookings   Booking[]
+  flight     Flight     @relation(fields: [flightId], references: [id], onDelete: Cascade)
 
-  totalSeats     Int
-  availableSeats Int
+  @@unique([flightId, seatNumber])
+  @@index([flightId])
+  @@index([status])
+  @@map("seats")
+}
 
-  price          Float
+model Booking {
+  id        Int           @id @default(autoincrement())
+  userId    Int           @map("user_id")
+  flightId  Int           @map("flight_id")
+  seatId    Int           @map("seat_id")
+  status    BookingStatus @default(LOCKED)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+  flight    Flight        @relation(fields: [flightId], references: [id], onDelete: Cascade)
+  seat      Seat          @relation(fields: [seatId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime @default(now())
+  @@index([userId])
+  @@index([flightId])
+  @@index([seatId])
+  @@index([status])
+  @@map("bookings")
+}
 
-  //Relations
-  source         Airport @relation("SourceAirport", fields: [sourceId], references: [id])
-  destination    Airport @relation("DestinationAirport", fields: [destinationId], references: [id])
-  bookings       Booking[]
+model Waitlist {
+  id        Int      @id @default(autoincrement())
+  flightId  Int      @map("flight_id")
+  userId    Int      @map("user_id")
+  clvScore  Int      @map("clv_score")
+  createdAt DateTime @default(now()) @map("created_at")
+  flight    Flight   @relation(fields: [flightId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([flightId, userId])
+  @@index([flightId])
+  @@index([userId])
+  @@index([clvScore])
+  @@map("waitlist")
+}
+
+enum SeatStatus {
+  AVAILABLE
+  LOCKED
+  BOOKED
+}
+
+enum BookingStatus {
+  LOCKED
+  CONFIRMED
+  CANCELLED
+  EXPIRED
 }
