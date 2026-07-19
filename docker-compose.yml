@@ -1,9 +1,9 @@
 version: "3.9"
 
 services:
-  db:
+  postgres:
     image: postgres:15
-    container_name: flight_postgres
+    container_name: aerolock_postgres
     restart: always
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -12,19 +12,34 @@ services:
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: aerolock_redis
+    restart: always
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   adminer:
     image: adminer
-    container_name: flight_adminer
+    container_name: aerolock_adminer
     restart: always
     ports:
       - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
-  pgdata:
+  postgres_data:
