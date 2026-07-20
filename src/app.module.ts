@@ -6,6 +6,7 @@ import { RedisModule } from './infrastructure/redis/redis.module';
 import { UsersModule } from './users/users.module';
 import { FlightsModule } from './flights/flights.module';
 import { BookingModule } from './bookings/bookings.module';
+import { WaitlistModule } from './waitlist/waitlist.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { BookingModule } from './bookings/bookings.module';
     UsersModule,
     FlightsModule,
     BookingModule,
+    WaitlistModule
   ],
 })
 export class AppModule {}
