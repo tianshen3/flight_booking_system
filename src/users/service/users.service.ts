@@ -2,10 +2,21 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { UserRepository } from '../repositories/user.repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService { 
     constructor(private readonly userRepository: UserRepository){}
+
+    private mapToResponseDto(user: User): UserResponseDto {
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            clvScore: user.clvScore,
+            createdAt: user.createdAt,
+        };
+    }
 
     //method to create a user
     async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
@@ -21,13 +32,7 @@ export class UsersService {
         const user = await this.userRepository.create(createUserDto);
         
         //mapping prisma model to response dto
-        return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            clvScore: user.clvScore,
-            createdAt: user.createdAt,
-        };
+        return this.mapToResponseDto(user);
     }
 
     //method to find user by id;
@@ -39,13 +44,7 @@ export class UsersService {
         }
 
         //mapping prisma model to response dto
-        return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            clvScore: user.clvScore,
-            createdAt: user.createdAt,
-        };
+        return this.mapToResponseDto(user);
     }
 
     //method to get all users
@@ -67,12 +66,6 @@ export class UsersService {
         // return res;
 
         //map method
-        return users.map((user) => ({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            clvScore: user.clvScore,
-            createdAt: user.createdAt,
-        }));
+        return users.map((user)=> this.mapToResponseDto(user));
     }
 }
