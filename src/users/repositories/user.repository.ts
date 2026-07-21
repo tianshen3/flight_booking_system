@@ -52,6 +52,15 @@ export class UserRepository {
             data,
         })
     }
+
+    //for deleting a user
+    async delete(id: number){
+        return this.prisma.user.delete({
+            where: {
+                id,
+            },
+        });
+    }
 }
 
 //reading and writing logic belongs in the repository

@@ -6,6 +6,7 @@ import {
     Post,
     Patch,
     ParseIntPipe,
+    Delete,
 } from '@nestjs/common';
 
 import { UsersService } from '../service/users.service';
@@ -47,5 +48,13 @@ export class UsersController {
         return this.userServices.updateUser(id, updateUserDto);
     }
     
+
+    //deleting teh user
+    @Delete(':id')
+    async deleteUser(
+        @Param('id', ParseIntPipe) id: number,
+    ){
+        return this.userServices.deleteUser(id);
+    }
 }
 

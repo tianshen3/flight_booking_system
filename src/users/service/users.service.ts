@@ -96,4 +96,20 @@ export class UsersService {
 
         return this.mapToResponseDto(updatedUser);
     }
+
+    //delete user method
+    async deleteUser(id: number): Promise<{ message: string}> {
+        const user = await this.userRepository.findById(id);
+
+        if(!user){
+            throw new NotFoundException('User not exist');
+        }
+
+        await this.userRepository.delete(id);
+
+        return {
+            message: 'User Deleted Successfully',
+        }
+    };
+    
 }
