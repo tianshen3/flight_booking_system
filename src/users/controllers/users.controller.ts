@@ -24,6 +24,28 @@ export class UsersController {
         return this.userServices.createUser(createUserDto);
     }
 
+    //get all the users
+    @Get()
+    async getAllUsers(){
+        return this.userServices.getAllUsers();
+    }
+
+    //get user with an id
+    @Get(':id')
+    async getUserById(
+        @Param('id', ParseIntPipe) id: number,
+        ){
+            return this.userServices.getUserById(id);
+    }
+
+    //updating the user
+    @Patch(':id')
+    async updateUser(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateUserDto: UpdateUserDto,
+    ){
+        return this.userServices.updateUser(id, updateUserDto);
+    }
     
 }
 
