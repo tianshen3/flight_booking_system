@@ -47,4 +47,32 @@ export class UsersService {
             createdAt: user.createdAt,
         };
     }
+
+    //method to get all users
+    async getAllUsers(): Promise<UserResponseDto[]> {
+
+        const users = await this.userRepository.findAll();
+
+        //custom loop way
+        // const res: UserResponseDto[] = [];
+        // for(const user of users){
+        //     res.push({
+        //         id: user.id,
+        //         name: user.name,
+        //         email: user.email,
+        //         clvScore: user.clvScore,
+        //         createdAt: user.createdAt,
+        //     });    
+        // }
+        // return res;
+
+        //map method
+        return users.map((user) => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            clvScore: user.clvScore,
+            createdAt: user.createdAt,
+        }));
+    }
 }
