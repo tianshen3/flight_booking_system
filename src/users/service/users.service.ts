@@ -3,6 +3,7 @@ import { UserRepository } from '../repositories/user.repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { User } from '@prisma/client';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UsersService { 
@@ -67,5 +68,32 @@ export class UsersService {
 
         //map method
         return users.map((user)=> this.mapToResponseDto(user));
+    }
+
+    //the update user method
+    async updateUser(
+        id: number,
+        updateUserDto: UpdateUserDto,
+    ): Promise<UserResponseDto>{
+
+        //finding user with this id
+        const user = await this.userRepository.findById(id);
+        if(!user){
+            throw new NotFoundException('User not found');
+        }
+
+        //checking if the email requires update
+        if(updateUserDto.email){
+
+            //checking if the email already exists or not
+            const existingUser =  await this.userRepository.findByEmail(updateUserDto.email);
+            if(existingUser && existingUser.id !== id){
+                throw new ConflictException('Email already exists');
+            }
+        }
+
+        const updatedUser = await this.userRepository.update(id, updateUserDto);
+
+        return this.mapToResponseDto(updatedUser);
     }
 }
