@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { FlightRepository } from '../repositories/flight.repository';
 import { CreateFlightDto } from '../dto/create-flight.dto';
 import { FlightResponseDto } from '../dto/flight-response.dto';
@@ -18,6 +18,7 @@ export class FlightsService{
                 arrivalTime: flight.arrivalTime,
             };
     }
+
     //create flight method
     async createFlight(createFlightDto: CreateFlightDto): Promise<FlightResponseDto> {
 
@@ -36,4 +37,17 @@ export class FlightsService{
 
         return this.mapToResponseDto(flight);
     }
+    
+    //get flightbyId method
+    async getFlightById(id: number): Promise<FlightResponseDto> {
+
+        const flight = await this.flightRepository.findById(id);
+        if(!flight){
+            throw new NotFoundException('Flight not found');
+        }
+
+        return this.mapToResponseDto(flight);
+    }
+
+    //
 }
