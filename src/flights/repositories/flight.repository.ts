@@ -21,7 +21,11 @@ export class FlightRepository {
 
     //method to get all the flights readonly
     async findAll() {
-        return this.prisma.flight.findMany();
+        return this.prisma.flight.findMany({
+            orderBy: {
+                departureTime: 'asc',
+            },
+        });
     }
 
     //get details about a particular flight through its id ,readonly

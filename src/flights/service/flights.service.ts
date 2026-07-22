@@ -49,5 +49,11 @@ export class FlightsService{
         return this.mapToResponseDto(flight);
     }
 
-    //
+    // method to get all flights
+    async getAllFlights() : Promise<FlightResponseDto[]> {
+
+        const flights = await this.flightRepository.findAll();
+
+        return flights.map((flight) => this.mapToResponseDto(flight));
+    }
 }
