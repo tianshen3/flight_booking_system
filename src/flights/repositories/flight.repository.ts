@@ -33,4 +33,12 @@ export class FlightRepository {
         });
     }
 
+    //find by flight number method
+    async findByFlightNumber(flightNumber: string){
+        return this.prisma.flight.findUnique({
+            where: {
+                flightNumber,
+            },
+        });
+    }
 }
