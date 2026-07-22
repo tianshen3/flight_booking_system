@@ -12,6 +12,7 @@ import {
 import { UsersService } from '../service/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserResponseDto } from '../dto/user-response.dto';
 
 @Controller('users')
 export class UsersController {
@@ -21,13 +22,13 @@ export class UsersController {
     @Post()
     async createUser(
         @Body() createUserDto: CreateUserDto,
-    ){
+    ): Promise<UserResponseDto> {
         return this.userServices.createUser(createUserDto);
     }
 
     //get all the users
     @Get()
-    async getAllUsers(){
+    async getAllUsers(): Promise<UserResponseDto[]> {
         return this.userServices.getAllUsers();
     }
 
@@ -35,7 +36,7 @@ export class UsersController {
     @Get(':id')
     async getUserById(
         @Param('id', ParseIntPipe) id: number,
-        ){
+        ): Promise<UserResponseDto> {
             return this.userServices.getUserById(id);
     }
 
@@ -44,7 +45,7 @@ export class UsersController {
     async updateUser(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateUserDto: UpdateUserDto,
-    ){
+    ): Promise<UserResponseDto> {
         return this.userServices.updateUser(id, updateUserDto);
     }
     
