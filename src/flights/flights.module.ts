@@ -4,9 +4,16 @@ import { SeatRepository } from './repositories/seats.repository';
 import { FlightsService } from './service/flights.service';
 import { FlightsController } from './controller/flights.controller';
 import { SeatsService } from './service/seats.service';
+import { FlightSeatsController } from './controller/flight.seats.controller';
+import { SeatsController } from './controller/seats.controller';
+
 
 @Module({
-    controllers: [FlightsController],
+    controllers: [
+        FlightSeatsController,
+        FlightsController,
+        SeatsController,
+    ],
     providers: [
         FlightsService,
         SeatsService,

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SeatRepository } from '../repositories/seats.repository';
-import { Seat } from '@prisma/client';
+import { Seat, SeatStatus } from '@prisma/client';
 import { SeatResponseDto } from '../dto/seat-response.dto';
 import { FlightRepository } from '../repositories/flight.repository';
 
@@ -23,6 +23,7 @@ export class SeatsService{
     //get all seats by flight id
     async getSeatsByFlightId(flightId: number): Promise<SeatResponseDto[]> {
 
+        //probably can be reduced to one query
         const flight = await this.flightRepository.findById(flightId);
         if(!flight){
             throw new NotFoundException('Flight Not Found');
@@ -33,5 +34,34 @@ export class SeatsService{
         return seats.map((seat) => this.mapToResponseDto(seat));
     }
 
+    //get a single seat
+    async getSeatById(seatId: number): Promise<SeatResponseDto> {
+        const seat = await this.seatRepository.findBySeatId(seatId);
+
+        if(!seat){
+            throw new NotFoundException('Seat not found');
+        }
+
+        return this.mapToResponseDto(seat);
+    }
+
+    //update seat status
+    async updateSeatStatus(
+        seatId: number,
+        status: SeatStatus,
+    ): Promise<SeatResponseDto> {
+       const seat = await this.seatRepository.findBySeatId(seatId);
+
+        if (!seat) {
+            throw new NotFoundException('Seat not found');
+        }
+
+        const updatedSeat = await this.seatRepository.updateSeatStatus(
+            seatId,
+            status,
+        );
+
+        return this.mapToResponseDto(updatedSeat); 
+    }
 
 }
