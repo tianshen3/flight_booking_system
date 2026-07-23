@@ -40,11 +40,23 @@ export class BookingRepository {
     }
 
     //find all the booking belonging to a particular user
-    async findUserBookings(userId: number){
+    async findByUserId(userId: number){
         return this.prisma.booking.findMany({
             where: {
                 userId,
             },
         });
+    }
+
+    //adding a method for cron job to delete the stale bookings and free the seats
+    async findExpiredLockedBookings(expiryTime: Date){
+        return this.prisma.booking.findMany({
+            where: {
+                status: BookingStatus.LOCKED,
+                createdAt: {
+                    lt: expiryTime,
+                }
+            }
+        })
     }
 }
