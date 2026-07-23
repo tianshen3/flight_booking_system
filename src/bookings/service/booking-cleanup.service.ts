@@ -21,20 +21,26 @@ export class BookingCleanupService {
         console.log(
              `Found ${expiredBookings.length} expired bookings to clean up.`,   
         );
-        
+
         for(const booking of expiredBookings){
-
-            //status update of booking to expired
-            await this.bookingRepository.updateStatus(
-                booking.id,
-                BookingStatus.EXPIRED,
-            )
-
-            //status update of the seat to available
-            await this.seatRepository.updateSeatStatus(
-                booking.seatId,
-                SeatStatus.AVAILABLE,
-            );
+              try {
+                //status update of booking to expired
+                await this.bookingRepository.updateStatus(
+                    booking.id,
+                    BookingStatus.EXPIRED,
+                )
+    
+                //status update of the seat to available
+                await this.seatRepository.updateSeatStatus(
+                    booking.seatId,
+                    SeatStatus.AVAILABLE,
+                );
+            } catch (error) {
+                console.error(
+                    `Failed to cleanup booking ${booking.id}: `,
+                    error,
+                );
+            }
         }
 
 
