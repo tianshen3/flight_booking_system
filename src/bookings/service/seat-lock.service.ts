@@ -46,4 +46,30 @@ export class SeatLockService{
 
         return result==='OK';
     }
+
+    //verify lock
+    async hasLock(
+        flightId: number,
+        seatId: number,
+    ): Promise<boolean> {
+        const key = this.generateSeatKey(flightId, seatId);
+
+        const client = this.redisService.getClient();
+
+        const result = await client.exists(key);
+
+        return result === 1;
+    }
+
+    //relase lock
+    async releaseLock(
+        flightId: number,
+        seatId: number,
+    ): Promise<void> {
+        const key = this.generateSeatKey(flightId, seatId);
+
+        const client = this.redisService.getClient();
+
+        await client.del(key);
+    }
 }
