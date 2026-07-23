@@ -18,6 +18,10 @@ export class BookingCleanupService {
 
         const expiredBookings = await this.bookingRepository.findExpiredLockedBookings(expiryTime);
 
+        console.log(
+             `Found ${expiredBookings.length} expired bookings to clean up.`,   
+        );
+        
         for(const booking of expiredBookings){
 
             //status update of booking to expired
@@ -32,5 +36,8 @@ export class BookingCleanupService {
                 SeatStatus.AVAILABLE,
             );
         }
+
+
+        console.log('Booking cleanup completed.');
     }
 }
