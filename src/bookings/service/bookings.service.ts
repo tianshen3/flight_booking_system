@@ -7,6 +7,8 @@ import { LockSeatDto } from '../dto/lock-seat.dto';
 import { BookingStatus, SeatStatus } from '@prisma/client';
 import { SeatLockService } from './seat-lock.service';
 import { LockSeatResponseDto } from '../dto/lock-seat-response.dto';
+import { ConfirmBookingDto } from '../dto/confirm-booking.dto';
+import { BookingResponseDto } from '../dto/booking-response.dto';
 
 @Injectable()
 export class BookingService{
@@ -84,6 +86,51 @@ export class BookingService{
             bookingId: booking.id,
             seatId: booking.seatId,
             status: booking.status,
+        };
+    }
+
+    //for confirm booking
+    async confirmBooking(
+        bookingId: number,
+    ): Promise<BookingResponseDto> {
+        const booking = await this.bookingRepository.findById(bookingId);
+
+        if(!booking){
+            throw new NotFoundException('Booking not found');
+        }
+
+        if (booking.status !== BookingStatus.LOCKED) {
+            throw new BadRequestException(
+                'Booking is not in LOCKED state.',
+            );
+        }
+
+        const hasLock = await this.seatLockService.hasLock(
+            booking.flightId,
+            booking.seatId,
+        );
+
+        if (!hasLock) {
+            throw new BadRequestException(
+                'Seat lock has expired.',
+            );
+        }
+
+        const updatedBooking = await this.bookingRepository.updateStatus(
+            booking.id,
+            BookingStatus.CONFIRMED,
+        );
+        await this.seatRepository.updateSeatStatus(
+            booking.seatId,
+            SeatStatus.BOOKED,
+        );
+
+        return {
+            bookingId: updatedBooking.id,
+            userId: updatedBooking.userId,
+            flightId: updatedBooking.flightId,
+            seatId: updatedBooking.seatId,
+            status: updatedBooking.status,
         };
     }
 }
