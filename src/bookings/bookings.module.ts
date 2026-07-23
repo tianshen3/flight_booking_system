@@ -5,8 +5,12 @@ import { UsersModule } from 'src/users/users.module';
 import { FlightsModule } from 'src/flights/flights.module';
 import { SeatLockService } from './service/seat-lock.service';
 import { BookingCleanupService } from './service/booking-cleanup.service';
+import { BookingController } from './controller/bookings.controller';
 
 @Module({
+    controllers: [
+        BookingController,
+    ],
     imports: [
         UsersModule,
         FlightsModule,
