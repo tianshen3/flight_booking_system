@@ -4,6 +4,7 @@ import { BookingService } from './service/bookings.service';
 import { UsersModule } from 'src/users/users.module';
 import { FlightsModule } from 'src/flights/flights.module';
 import { SeatLockService } from './service/seat-lock.service';
+import { BookingCleanupService } from './service/booking-cleanup.service';
 
 @Module({
     imports: [
@@ -14,6 +15,7 @@ import { SeatLockService } from './service/seat-lock.service';
         BookingRepository,
         BookingService,
         SeatLockService,
+        BookingCleanupService,
     ],
     exports: [BookingRepository],
 })
