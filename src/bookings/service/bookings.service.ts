@@ -4,7 +4,7 @@ import { UserRepository } from 'src/users/repositories/user.repository';
 import { FlightRepository } from 'src/flights/repositories/flight.repository';
 import { SeatRepository } from 'src/flights/repositories/seats.repository';
 import { LockSeatDto } from '../dto/lock-seat.dto';
-import { BookingStatus, SeatStatus } from '@prisma/client';
+import { Booking, BookingStatus, SeatStatus } from '@prisma/client';
 import { SeatLockService } from './seat-lock.service';
 import { LockSeatResponseDto } from '../dto/lock-seat-response.dto';
 import { ConfirmBookingDto } from '../dto/confirm-booking.dto';
@@ -20,6 +20,15 @@ export class BookingService{
         private readonly seatLockService: SeatLockService,
     ){}
 
+    private maptoResponseDto(booking: Booking): BookingResponseDto{
+        return {
+            bookingId: booking.id,
+            userId: booking.userId,
+            flightId: booking.flightId,
+            seatId: booking.seatId,
+            status: booking.status,
+        }
+    }
     //seat locking and booking
     async lockSeat(lockSeatDto: LockSeatDto): Promise<LockSeatResponseDto> {
 
@@ -125,13 +134,7 @@ export class BookingService{
             SeatStatus.BOOKED,
         );
 
-        return {
-            bookingId: updatedBooking.id,
-            userId: updatedBooking.userId,
-            flightId: updatedBooking.flightId,
-            seatId: updatedBooking.seatId,
-            status: updatedBooking.status,
-        };
+        return this.maptoResponseDto(booking);
     }
 
     //cancelling a booking
@@ -168,13 +171,7 @@ export class BookingService{
             booking.seatId,
         );
 
-        return {
-            bookingId: cancelledBooking.id,
-            userId: cancelledBooking.userId,
-            flightId: cancelledBooking.flightId,
-            seatId: cancelledBooking.seatId,
-            status: cancelledBooking.status,
-        };
+        return this.maptoResponseDto(cancelledBooking);
     }
 
     //booking query
@@ -186,12 +183,13 @@ export class BookingService{
             throw new NotFoundException('Booking not Found');
         }
 
-        return {
-            bookingId: booking.id,
-            userId: booking.userId,
-            flightId: booking.flightId,
-            seatId: booking.seatId,
-            status: booking.status,
-        };
+        return this.maptoResponseDto(booking);
     }
+
+    //get all the bookings of the user
+    async getUserBookings(userId: number): Promise<BookingResponseDto[]>{
+        const bookings = await this.bookingRepository.findUserBookings(userId);
+
+        return bookings.map((booking) => this.maptoResponseDto(booking));
+    } 
 }
