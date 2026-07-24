@@ -59,4 +59,16 @@ export class BookingRepository {
             }
         })
     }
+
+    //find all the bookings of the user
+    async findUserBookings(userId: number) {
+        return this.prisma.booking.findMany({
+            where: {
+                userId,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+    }
 }
