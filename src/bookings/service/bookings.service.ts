@@ -7,7 +7,6 @@ import { LockSeatDto } from '../dto/lock-seat.dto';
 import { Booking, BookingStatus, SeatStatus } from '@prisma/client';
 import { SeatLockService } from './seat-lock.service';
 import { LockSeatResponseDto } from '../dto/lock-seat-response.dto';
-import { ConfirmBookingDto } from '../dto/confirm-booking.dto';
 import { BookingResponseDto } from '../dto/booking-response.dto';
 import { SeatReassignmentService } from 'src/waitlist/service/seat-reassignment.service';
 
@@ -136,7 +135,7 @@ export class BookingService{
             SeatStatus.BOOKED,
         );
 
-        return this.maptoResponseDto(booking);
+        return this.maptoResponseDto(updatedBooking);
     }
 
     //cancelling a booking

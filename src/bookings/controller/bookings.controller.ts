@@ -4,7 +4,6 @@ import {
     Get,
     Param,
     ParseIntPipe,
-    ParseUUIDPipe,
     Post,
 } from '@nestjs/common';
 import { BookingService } from '../service/bookings.service';

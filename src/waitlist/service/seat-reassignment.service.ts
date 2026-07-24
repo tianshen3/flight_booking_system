@@ -1,11 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { WaitlistRepository } from '../repository/waitlist.repository';
 import { WaitlistRedisService } from './waitlist-redis.service';
 import { BookingRepository } from 'src/bookings/repositories/booking.repository';
 import { SeatRepository } from 'src/flights/repositories/seats.repository';
 import { UserRepository } from 'src/users/repositories/user.repository';
 import { BookingStatus, SeatStatus } from '@prisma/client';
-import { filter } from 'rxjs';
 
 @Injectable()
 export class SeatReassignmentService{
