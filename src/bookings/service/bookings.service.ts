@@ -9,6 +9,7 @@ import { SeatLockService } from './seat-lock.service';
 import { LockSeatResponseDto } from '../dto/lock-seat-response.dto';
 import { ConfirmBookingDto } from '../dto/confirm-booking.dto';
 import { BookingResponseDto } from '../dto/booking-response.dto';
+import { SeatReassignmentService } from 'src/waitlist/service/seat-reassignment.service';
 
 @Injectable()
 export class BookingService{
@@ -18,6 +19,7 @@ export class BookingService{
         private readonly flightRepository: FlightRepository,
         private readonly seatRepository: SeatRepository,
         private readonly seatLockService: SeatLockService,
+        private readonly seatReassignmentService: SeatReassignmentService,
     ){}
 
     private maptoResponseDto(booking: Booking): BookingResponseDto{
@@ -164,6 +166,12 @@ export class BookingService{
             SeatStatus.AVAILABLE,
         )
 
+        //after this seat becomes available and the redis lock is released
+        //try to assign this seat to the customer wiht highest clvScore
+        await this.seatReassignmentService.assignSeat(
+            booking.flightId,
+            booking.seatId,
+        )
 
         //releasing the redis lock
         await this.seatLockService.releaseLock(

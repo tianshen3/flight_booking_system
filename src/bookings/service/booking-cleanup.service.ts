@@ -3,12 +3,14 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { SeatRepository } from 'src/flights/repositories/seats.repository';
 import { BookingRepository } from '../repositories/booking.repository';
 import { BookingStatus, SeatStatus } from '@prisma/client';
+import { SeatReassignmentService } from 'src/waitlist/service/seat-reassignment.service';
 
 @Injectable()
 export class BookingCleanupService {
     constructor(
         private readonly bookingRepository: BookingRepository,
         private readonly seatRepository: SeatRepository,
+        private readonly seatReassignment: SeatReassignmentService,
     ){}
 
     @Cron(CronExpression.EVERY_MINUTE)
@@ -35,6 +37,12 @@ export class BookingCleanupService {
                     booking.seatId,
                     SeatStatus.AVAILABLE,
                 );
+
+                //try to assign this seat to the highest clvScore customer
+                await this.seatReassignment.assignSeat(
+                    booking.flightId,
+                    booking.seatId,
+                )
             } catch (error) {
                 console.error(
                     `Failed to cleanup booking ${booking.id}: `,
