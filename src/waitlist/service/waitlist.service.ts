@@ -18,7 +18,7 @@ export class WaitlistService{
     ){}
 
     //method to join the waitlist
-    async joinWaitlist(dto: JoinWaitlistDto){
+    async joinWaitlist(dto: JoinWaitlistDto): Promise<WaitlistResponseDto> {
 
         //validate the user
         const user = await this.userRepository.findById(dto.userId);
