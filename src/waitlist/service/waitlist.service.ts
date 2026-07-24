@@ -89,4 +89,27 @@ export class WaitlistService{
             position,
         };
     }
+
+    //method to leave the waitlist
+    async leaveWailtlist(id: number) {
+
+        //finding waitlist entry in the 
+        const waitlistEntry = await this.waitlistRepository.findById(id);
+        if(!waitlistEntry){
+            throw new NotFoundException('Waitlist entry not found');
+        }
+
+        //remove this from the postgres
+        await this.waitlistRepository.remove(id);
+
+        //remove the entry from the redis as well
+        await this.waitlistRedisService.removeUser(
+            waitlistEntry.flightId,
+            waitlistEntry.userId,
+        );
+
+        return {
+            message: 'User removed from the waitlist successfully.',
+        }
+    }
 }
