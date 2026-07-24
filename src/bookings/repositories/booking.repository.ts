@@ -71,4 +71,18 @@ export class BookingRepository {
             },
         });
     }
+
+    //find the confirmed booking of hte user
+    async findConfirmedBooking(
+        userId: number,
+        flightId: number,
+    ) {
+        return this.prisma.booking.findFirst({
+            where: {
+                userId,
+                flightId,
+                status: BookingStatus.CONFIRMED,
+            },
+        });
+    }
 }
