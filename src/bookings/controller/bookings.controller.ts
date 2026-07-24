@@ -4,6 +4,7 @@ import {
     Get,
     Param,
     ParseIntPipe,
+    ParseUUIDPipe,
     Post,
 } from '@nestjs/common';
 import { BookingService } from '../service/bookings.service';
@@ -39,10 +40,19 @@ export class BookingController {
         return this.bookingService.cancelBooking(dto.bookingId);
     }
 
+    @Get('user/:userId')
+    getuserBookings(
+        @Param('userId', ParseIntPipe) userId: number
+    ){
+        return this.bookingService.getUserBookings(userId);
+    }
+    
     @Get(':id')
     getBookingById(
         @Param('id', ParseIntPipe) bookingId: number
     ) {
         return this.bookingService.getBookingById(bookingId);
     }
+
+    
 }
