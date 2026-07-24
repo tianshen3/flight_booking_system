@@ -1,6 +1,9 @@
 import {
     Body,
     Controller,
+    Get,
+    Param,
+    ParseIntPipe,
     Post,
 } from '@nestjs/common';
 import { BookingService } from '../service/bookings.service';
@@ -36,4 +39,10 @@ export class BookingController {
         return this.bookingService.cancelBooking(dto.bookingId);
     }
 
+    @Get(':id')
+    getBookingById(
+        @Param('id', ParseIntPipe) bookingId: number
+    ) {
+        return this.bookingService.getBookingById(bookingId);
+    }
 }

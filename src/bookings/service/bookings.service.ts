@@ -176,4 +176,22 @@ export class BookingService{
             status: cancelledBooking.status,
         };
     }
+
+    //booking query
+    async getBookingById(bookingId: number): Promise<BookingResponseDto> {
+
+        //find the booking
+        const booking = await this.bookingRepository.findById(bookingId);
+        if(!booking){
+            throw new NotFoundException('Booking not Found');
+        }
+
+        return {
+            bookingId: booking.id,
+            userId: booking.userId,
+            flightId: booking.flightId,
+            seatId: booking.seatId,
+            status: booking.status,
+        };
+    }
 }
