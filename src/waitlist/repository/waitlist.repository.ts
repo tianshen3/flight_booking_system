@@ -17,12 +17,17 @@ export class WaitlistRepository {
       where: {
         flightId,
       },
-      orderBy: {
-        clvScore: 'desc',
-      },
+      orderBy: [
+        {
+          clvScore: 'desc',
+        },
+        {
+          createdAt: 'asc',
+        }
+      ]
     });
   }
-
+  
   async remove(id: number) {
     return this.prisma.waitlist.delete({
       where: {
@@ -40,5 +45,32 @@ export class WaitlistRepository {
     });
 
     return waitlistEntry !== null;
+  }
+
+  //find by id method
+  async findById(id: number){
+    return this.prisma.waitlist.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  //return the waitlist size
+  async count(flightId: number){
+    return this.prisma.waitlist.count({
+      where: {
+        flightId,
+      },
+    });
+  }
+
+  //clear the entire waitlists of the flight
+  async clearFlight(flightId: number){
+    return this.prisma.waitlist.deleteMany({
+      where: {
+        flightId,
+      },
+    });
   }
 }
