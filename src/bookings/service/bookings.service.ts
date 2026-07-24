@@ -133,4 +133,47 @@ export class BookingService{
             status: updatedBooking.status,
         };
     }
+
+    //cancelling a booking
+    async cancelBooking(bookingId: number): Promise<BookingResponseDto> {
+
+        //find booking with the given id
+        const booking = await this.bookingRepository.findById(bookingId);
+        if(!booking){
+            throw new NotFoundException('Booking not Found');
+        }
+
+        //validating the booking status
+        if(booking.status === BookingStatus.CANCELLED || booking.status === BookingStatus.EXPIRED){
+            throw new BadRequestException(`Cannot cancel a ${booking.status.toLowerCase()} booking`);
+
+        }
+
+        //updating the status to cancelled
+        const cancelledBooking = await this.bookingRepository.updateStatus(
+            booking.id,
+            BookingStatus.CANCELLED,
+        );
+
+        //updating the seat status to avaliable
+        await this.seatRepository.updateSeatStatus(
+            booking.seatId,
+            SeatStatus.AVAILABLE,
+        )
+
+
+        //releasing the redis lock
+        await this.seatLockService.releaseLock(
+            booking.flightId,
+            booking.seatId,
+        );
+
+        return {
+            bookingId: cancelledBooking.id,
+            userId: cancelledBooking.userId,
+            flightId: cancelledBooking.flightId,
+            seatId: cancelledBooking.seatId,
+            status: cancelledBooking.status,
+        };
+    }
 }
