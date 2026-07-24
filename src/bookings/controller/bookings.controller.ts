@@ -6,6 +6,7 @@ import {
 import { BookingService } from '../service/bookings.service';
 import { LockSeatDto } from '../dto/lock-seat.dto';
 import { ConfirmBookingDto } from '../dto/confirm-booking.dto';
+import { CancelBookingDto } from '../dto/cancel-booking.dto';
 
 @Controller('bookings')
 export class BookingController {
@@ -26,6 +27,13 @@ export class BookingController {
         @Body() dto: ConfirmBookingDto,
     ){
         return this.bookingService.confirmBooking(dto.bookingId);
+    }
+
+    @Post('cancel')
+    cancelBooking(
+        @Body() dto: CancelBookingDto,
+    ){
+        return this.bookingService.cancelBooking(dto.bookingId);
     }
 
 }
