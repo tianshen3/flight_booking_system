@@ -44,7 +44,8 @@ export class WaitlistRepository {
       },
     });
 
-    return waitlistEntry !== null;
+    // return waitlistEntry !== null;
+    return waitlistEntry;
   }
 
   //find by id method
