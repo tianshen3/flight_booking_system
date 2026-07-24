@@ -5,6 +5,7 @@ import { UserRepository } from 'src/users/repositories/user.repository';
 import { WaitlistRedisService } from './waitlist-redis.service';
 import { BookingRepository } from 'src/bookings/repositories/booking.repository';
 import { JoinWaitlistDto } from '../dto/join-waitlist.dto';
+import { WaitlistResponseDto } from '../dto/waitlist-response.dto';
 
 @Injectable()
 export class WaitlistService{
@@ -111,5 +112,25 @@ export class WaitlistService{
         return {
             message: 'User removed from the waitlist successfully.',
         }
+    }
+
+    //method to get the entire  waitlist of the flight
+    async getFlightWaitlist(flightId: number): Promise<WaitlistResponseDto[]> {
+
+        const flight = await this.flightRepository.findById(flightId);
+        if(!flight){
+            throw new NotFoundException('Flight not found');
+        }
+
+        //get the list from the db
+        const waitlist = await this.waitlistRepository.findByFlight(flightId);
+
+        return waitlist.map((entry, index) => ({
+            id: entry.id,
+            userId: entry.userId,
+            flightId: entry.flightId,
+            clvScore: entry.clvScore,
+            position: index+1,
+        }))
     }
 }

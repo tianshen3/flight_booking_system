@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Delete,
+    Get,
     Param,
     ParseIntPipe,
     Post,
@@ -27,5 +28,12 @@ export class WaitlistController{
         @Param('id', ParseIntPipe) id: number,
     ){
         return this.waitlistService.leaveWailtlist(id);
+    }
+
+    @Get('flights/:flightId')
+    getFlightWaitlist(
+        @Param('flightId', ParseIntPipe) flightId: number,
+    ) {
+        return this.waitlistService.getFlightWaitlist(flightId);
     }
 }
