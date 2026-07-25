@@ -8,6 +8,7 @@ import { FlightsModule } from './flights/flights.module';
 import { BookingModule } from './bookings/bookings.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     UsersModule,
     FlightsModule,
     BookingModule,
-    WaitlistModule
+    WaitlistModule,
+    AuthModule
   ],
 })
 export class AppModule {}
