@@ -11,7 +11,11 @@ model User {
   id        Int        @id @default(autoincrement())
   name      String
   email     String     @unique
+  password  String
   clvScore  Int        @map("clv_score")
+  role      Role       @default(CUSTOMER)
+  isActive  Boolean    @default(true)
+  lastLogin DateTime?
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
   bookings  Booking[]
@@ -102,4 +106,9 @@ enum BookingStatus {
   CONFIRMED
   CANCELLED
   EXPIRED
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
 }

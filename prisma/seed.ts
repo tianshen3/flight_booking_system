@@ -8,6 +8,7 @@ import {
   SeatStatus,
   BookingStatus,
 } from "@prisma/client";
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -15,11 +16,15 @@ const prisma = new PrismaClient();
 async function seedUsers(): Promise<User[]> {
   const users: User[] = [];
 
+  //hashed password for all the seeded users
+  const hashedPassword = await bcrypt.hash('password123', 10)
+
   for (let i = 1; i <= 100; i++) {
     const user = await prisma.user.create({
       data: {
         name: `User ${i}`,
         email: `user${i}@aerolock.dev`,
+        password: hashedPassword,
         clvScore: Math.floor(Math.random() * 1000) + 1,
       },
     });
