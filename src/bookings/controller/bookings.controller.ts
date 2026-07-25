@@ -5,11 +5,13 @@ import {
     Param,
     ParseIntPipe,
     Post,
+    UseGuards,
 } from '@nestjs/common';
 import { BookingService } from '../service/bookings.service';
 import { LockSeatDto } from '../dto/lock-seat.dto';
 import { ConfirmBookingDto } from '../dto/confirm-booking.dto';
 import { CancelBookingDto } from '../dto/cancel-booking.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('bookings')
 export class BookingController {
@@ -17,6 +19,7 @@ export class BookingController {
         private readonly bookingService: BookingService,
     ) {}
 
+    @UseGuards(JwtAuthGuard)
     @Post('locks')
     lockSeat(
         @Body() lockSeatDto: LockSeatDto,
@@ -24,7 +27,7 @@ export class BookingController {
         return this.bookingService.lockSeat(lockSeatDto);
     }
 
-
+    @UseGuards(JwtAuthGuard)
     @Post('confirm')
     confirmBooking(
         @Body() dto: ConfirmBookingDto,
@@ -32,6 +35,7 @@ export class BookingController {
         return this.bookingService.confirmBooking(dto.bookingId);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('cancel')
     cancelBooking(
         @Body() dto: CancelBookingDto,
@@ -39,6 +43,7 @@ export class BookingController {
         return this.bookingService.cancelBooking(dto.bookingId);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('user/:userId')
     getuserBookings(
         @Param('userId', ParseIntPipe) userId: number
