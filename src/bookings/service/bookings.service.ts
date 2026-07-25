@@ -138,7 +138,7 @@ export class BookingService{
             updatedBooking.userId,
             updatedBooking.id,
         )
-        
+
         await this.seatRepository.updateSeatStatus(
             booking.seatId,
             SeatStatus.BOOKED,
@@ -167,6 +167,12 @@ export class BookingService{
             booking.id,
             BookingStatus.CANCELLED,
         );
+
+        //notification for the confirmed cancelled booking
+        this.notificationService.sendBookingCancellation(
+            cancelledBooking.userId,
+            cancelledBooking.id,
+        )
 
         //updating the seat status to avaliable
         await this.seatRepository.updateSeatStatus(
