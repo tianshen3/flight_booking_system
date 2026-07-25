@@ -112,4 +112,8 @@ export class UsersService {
         }
     };
     
+    //method to get user by email
+    async getUserByEmail(email: string){
+        return this.userRepository.findByEmail(email);
+    }
 }

@@ -33,6 +33,7 @@ export class UserRepository {
     async create(data : {
         name: string;
         email: string;
+        password: string;
         clvScore: number;
     }){
         return this.prisma.user.create({
