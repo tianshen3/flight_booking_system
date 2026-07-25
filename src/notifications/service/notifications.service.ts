@@ -28,7 +28,7 @@ export class NotificationService{
         );
     }
 
-    sendWaitlistPromotion(
+    sendWaitlistPromotionNotification(
         userId: number,
         flightId: number,
     ){
@@ -38,15 +38,5 @@ export class NotificationService{
         );
     }
 
-    sendSeatReassignment(
-        userId: number,
-        seatId: number,
-        flightId: number,
-    ){
-        this.consoleNotificationProvider.sendSeatReassignment(
-            userId,
-            seatId,
-            flightId,
-        );
-    }
+    
 }
