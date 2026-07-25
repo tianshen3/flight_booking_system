@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/infrastructure/database/prisma.service';
 
 @Injectable()
@@ -17,7 +18,6 @@ export class FlightRepository {
             data,
         });
     }
-
 
     //method to get all the flights readonly
     async findAll() {
@@ -43,6 +43,19 @@ export class FlightRepository {
             where: {
                 flightNumber,
             },
+        });
+    }
+
+    //method to update the flight details
+    async update(
+        id: number,
+        data: Prisma.FlightUpdateInput,
+    ){
+        return this.prisma.flight.update({
+            where: {
+                id,
+            },
+            data,
         });
     }
 }

@@ -4,11 +4,13 @@ import {
     Get,
     Param,
     ParseIntPipe,
+    Patch,
     Post,
 } from '@nestjs/common';
 import { FlightsService } from '../service/flights.service';
 import { CreateFlightDto } from '../dto/create-flight.dto';
 import { FlightResponseDto } from '../dto/flight-response.dto';
+import { UpdateFlightDto } from '../dto/update-flight.dto';
 
 @Controller('flights')
 export class FlightsController {
@@ -31,5 +33,13 @@ export class FlightsController {
         @Param('id', ParseIntPipe) id: number 
     ): Promise<FlightResponseDto> {
         return this.flightsService.getFlightById(id);
+    }
+
+    @Patch(':id')
+    async updateFlight(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateFlightDto: UpdateFlightDto,
+    ) : Promise<FlightResponseDto> {
+        return this.flightsService.updateFlight(id, updateFlightDto);
     }
 }
