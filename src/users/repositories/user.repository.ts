@@ -1,6 +1,7 @@
 import { Injectable } from  '@nestjs/common';
 import { PrismaService } from 'src/infrastructure/database/prisma.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { Role } from '@prisma/client';
 
 //decorator which makes this class  a provider
 @Injectable() 
@@ -35,6 +36,7 @@ export class UserRepository {
         email: string;
         password: string;
         clvScore: number;
+        role: Role;
     }){
         return this.prisma.user.create({
             data,
