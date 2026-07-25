@@ -7,12 +7,14 @@ import { WaitlistController } from './controller/waitlist.controller';
 import { WaitlistService } from './service/waitlist.service';
 import { WaitlistRedisService } from './service/waitlist-redis.service';
 import { SeatReassignmentService } from './service/seat-reassignment.service';
+import { NotificationModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
     UsersModule,
     FlightsModule,
     forwardRef(() => BookingModule),
+    NotificationModule,
   ],
   controllers: [
     WaitlistController,
