@@ -1,13 +1,52 @@
 import { Injectable } from '@nestjs/common';
+import { ConsoleNotificationProvider } from '../providers/console-notifications.provider';
 
 @Injectable()
 export class NotificationService{
     
-    sendBookingConfirmation(){}
+    constructor(
+        private readonly consoleNotificationProvider: ConsoleNotificationProvider,
+    ){}
 
-    sendBookingCancellation(){}
+    sendBookingConfirmation(
+        userId: number,
+        bookingId: number,
+    ){
+        this.consoleNotificationProvider.sendBookingConfirmation(
+            userId,
+            bookingId,
+        );
+    }
 
-    sendWaitlistPromotion(){}
+    sendBookingCancellation(
+        userId: number,
+        bookingId: number,
+    ){
+        this.consoleNotificationProvider.sendBookingCancellation(
+            userId,
+            bookingId,
+        );
+    }
 
-    sendSeatReassignment(){}
+    sendWaitlistPromotion(
+        userId: number,
+        flightId: number,
+    ){
+        this.consoleNotificationProvider.sendWaitlistPromotion(
+            userId,
+            flightId,
+        );
+    }
+
+    sendSeatReassignment(
+        userId: number,
+        seatId: number,
+        flightId: number,
+    ){
+        this.consoleNotificationProvider.sendSeatReassignment(
+            userId,
+            seatId,
+            flightId,
+        );
+    }
 }
