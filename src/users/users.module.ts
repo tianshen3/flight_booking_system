@@ -11,6 +11,9 @@ import { UsersController } from './controllers/users.controller';
         UsersService,
     ],
     //any module which imports usermodule can also use userreop
-    exports: [UserRepository],
+    exports: [
+        UserRepository,
+        UsersService,
+    ],
 })
 export class UsersModule {};
