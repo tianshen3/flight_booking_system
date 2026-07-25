@@ -7,11 +7,12 @@ import * as bcrypt from 'bcrypt';
 import { Role } from '@prisma/client';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { LoginDto } from '../dto/login.dto';
+import { UserRepository } from 'src/users/repositories/user.repository';
 
 @Injectable()
 export class AuthService{
     constructor(
-        private readonly usersService: UsersService,
+        private readonly userRepository: UserRepository, 
         private readonly jwtService: JwtService,
     ){}
 
@@ -22,7 +23,7 @@ export class AuthService{
         const { name, email, password} = registerDto;
 
         //checking the user with this email
-        const existingUser = await this.usersService.getUserByEmail(email);
+        const existingUser = await this.userRepository.findByEmail(email);
         if(existingUser){
             throw new ConflictException('User with this email already exists');
         }
@@ -34,7 +35,7 @@ export class AuthService{
         );
 
         //saving it in the db
-        const user = await this.usersService.createUser({
+        const user = await this.userRepository.create({
             name: name,
             email: email,
             password: hashedPassword,
@@ -62,7 +63,7 @@ export class AuthService{
         const { email, password } = loginDto;
 
         //checking the the existence of the user
-        const user = await this.usersService.getUserByEmail(email);
+        const user = await this.userRepository.findByEmail(email);
         if(!user){
             throw new UnauthorizedException('Invalid email.');
         }

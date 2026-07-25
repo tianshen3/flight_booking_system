@@ -1,6 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
-import { CreateUserDto } from '../dto/create-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { User } from '@prisma/client';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -17,23 +16,6 @@ export class UsersService {
             clvScore: user.clvScore,
             createdAt: user.createdAt,
         };
-    }
-
-    //method to create a user
-    async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-
-        //checking if the user with current email already exists or not
-        const existingUser = await this.userRepository.findByEmail(createUserDto.email);
-
-        if(existingUser) {
-            throw new ConflictException('Email already exists');
-        }
-
-        //creating user
-        const user = await this.userRepository.create(createUserDto);
-        
-        //mapping prisma model to response dto
-        return this.mapToResponseDto(user);
     }
 
     //method to find user by id;
