@@ -7,6 +7,7 @@ import { SeatLockService } from './service/seat-lock.service';
 import { BookingCleanupService } from './service/booking-cleanup.service';
 import { BookingController } from './controller/bookings.controller';
 import { WaitlistModule } from 'src/waitlist/waitlist.module';
+import { NotificationModule } from 'src/notifications/notifications.module';
 
 @Module({
     controllers: [
@@ -16,6 +17,7 @@ import { WaitlistModule } from 'src/waitlist/waitlist.module';
         UsersModule,
         FlightsModule,
         forwardRef(() => WaitlistModule),
+        NotificationModule,
     ],
     providers: [
         BookingRepository,
