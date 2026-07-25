@@ -5,6 +5,7 @@ import { BookingRepository } from 'src/bookings/repositories/booking.repository'
 import { SeatRepository } from 'src/flights/repositories/seats.repository';
 import { UserRepository } from 'src/users/repositories/user.repository';
 import { BookingStatus, SeatStatus } from '@prisma/client';
+import { NotificationService } from 'src/notifications/service/notifications.service';
 
 @Injectable()
 export class SeatReassignmentService{
@@ -14,6 +15,7 @@ export class SeatReassignmentService{
         private readonly bookingRepository: BookingRepository,
         private readonly seatRepository: SeatRepository,
         private readonly userRepository: UserRepository,
+        private readonly notificationService: NotificationService,
     ){}
 
     //method to assign seat
@@ -95,6 +97,12 @@ export class SeatReassignmentService{
         await this.waitlistRedisService.removeUser(
             flightId,
             userId,
+        );
+
+        //notification for the seat reassignment
+        this.notificationService.sendWaitlistPromotionNotification(
+            userId,
+            flightId,
         );
 
         return booking;
