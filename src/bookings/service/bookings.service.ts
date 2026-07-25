@@ -9,6 +9,7 @@ import { SeatLockService } from './seat-lock.service';
 import { LockSeatResponseDto } from '../dto/lock-seat-response.dto';
 import { BookingResponseDto } from '../dto/booking-response.dto';
 import { SeatReassignmentService } from 'src/waitlist/service/seat-reassignment.service';
+import { NotificationService } from 'src/notifications/service/notifications.service';
 
 @Injectable()
 export class BookingService{
@@ -19,6 +20,7 @@ export class BookingService{
         private readonly seatRepository: SeatRepository,
         private readonly seatLockService: SeatLockService,
         private readonly seatReassignmentService: SeatReassignmentService,
+        private readonly notificationService: NotificationService,
     ){}
 
     private maptoResponseDto(booking: Booking): BookingResponseDto{
@@ -130,6 +132,13 @@ export class BookingService{
             booking.id,
             BookingStatus.CONFIRMED,
         );
+
+        //notification of confirmed booking
+        this.notificationService.sendBookingConfirmation(
+            updatedBooking.userId,
+            updatedBooking.id,
+        )
+        
         await this.seatRepository.updateSeatStatus(
             booking.seatId,
             SeatStatus.BOOKED,
