@@ -8,6 +8,7 @@ import { AuthService } from './service/auth.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { AdminBootstrapService } from './service/admin-bootstrap.service';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { RolesGuard } from './guards/roles.guard';
     JwtStrategy,
     JwtAuthGuard,
     RolesGuard,
+    AdminBootstrapService,
   ],
   exports:[
     AuthService,
