@@ -20,6 +20,11 @@ async function bootstrap() {
   );
   app.enableShutdownHooks();
 
+  app.enableCors({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
   .setTitle('AeroLock API')
   .setDescription('Flight Booking System API Documentation')
