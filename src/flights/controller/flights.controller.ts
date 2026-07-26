@@ -7,16 +7,23 @@ import {
     ParseIntPipe,
     Patch,
     Post,
+    UseGuards,
 } from '@nestjs/common';
 import { FlightsService } from '../service/flights.service';
 import { CreateFlightDto } from '../dto/create-flight.dto';
 import { FlightResponseDto } from '../dto/flight-response.dto';
 import { UpdateFlightDto } from '../dto/update-flight.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Role } from '@prisma/client';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('flights')
 export class FlightsController {
     constructor(private readonly flightsService: FlightsService){}
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Post()
     async createFlight(
         @Body() createFlightDto: CreateFlightDto,
@@ -36,6 +43,8 @@ export class FlightsController {
         return this.flightsService.getFlightById(id);
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Patch(':id')
     async updateFlight(
         @Param('id', ParseIntPipe) id: number,
@@ -44,6 +53,8 @@ export class FlightsController {
         return this.flightsService.updateFlight(id, updateFlightDto);
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Delete(':id')
     async deleteFlight(
         @Param('id', ParseIntPipe) id: number,
