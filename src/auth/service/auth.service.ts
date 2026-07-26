@@ -1,6 +1,5 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { UsersService } from 'src/users/service/users.service'
 import { RegisterDto } from '../dto/register.dto'
 
 import * as bcrypt from 'bcrypt';
@@ -92,5 +91,23 @@ export class AuthService{
             expiresIn: 3600,
         }
         
+    }
+
+    //return the user profile
+    async profile(userId: number) {
+        const user = await this.userRepository.findById(userId);
+
+        if(!user){
+            throw new NotFoundException('User not found');
+        }
+
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            clvScore: user.clvScore,
+            createdAt: user.createdAt
+        };
     }
 }

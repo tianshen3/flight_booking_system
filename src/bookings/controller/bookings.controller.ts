@@ -5,7 +5,6 @@ import {
     Param,
     ParseIntPipe,
     Post,
-    Req,
     UseGuards,
 } from '@nestjs/common';
 import { BookingService } from '../service/bookings.service';
@@ -13,7 +12,6 @@ import { LockSeatDto } from '../dto/lock-seat.dto';
 import { ConfirmBookingDto } from '../dto/confirm-booking.dto';
 import { CancelBookingDto } from '../dto/cancel-booking.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { AuthenticatedRequest } from 'src/auth/interfaces/authenticated-request.interface';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @Controller('bookings')
