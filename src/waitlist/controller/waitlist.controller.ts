@@ -12,7 +12,9 @@ import { WaitlistService } from '../service/waitlist.service';
 import { JoinWaitlistDto } from '../dto/join-waitlist.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Waitlist')
 @Controller('waitlist')
 export class WaitlistController{
     constructor(

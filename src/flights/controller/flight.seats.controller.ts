@@ -7,7 +7,9 @@ import {
 
 import { SeatsService } from '../service/seats.service';
 import { SeatResponseDto } from '../dto/seat-response.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Flights')
 @Controller('flights/:flightId/seats')
 export class FlightSeatsController {
     

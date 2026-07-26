@@ -13,7 +13,9 @@ import { ConfirmBookingDto } from '../dto/confirm-booking.dto';
 import { CancelBookingDto } from '../dto/cancel-booking.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Bookings')
 @Controller('bookings')
 export class BookingController {
     constructor(
