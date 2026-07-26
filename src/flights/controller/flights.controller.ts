@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     ParseIntPipe,
@@ -41,5 +42,12 @@ export class FlightsController {
         @Body() updateFlightDto: UpdateFlightDto,
     ) : Promise<FlightResponseDto> {
         return this.flightsService.updateFlight(id, updateFlightDto);
+    }
+
+    @Delete(':id')
+    async deleteFlight(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<{message: string}>{
+        return this.flightsService.deleteFlight(id);
     }
 }

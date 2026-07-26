@@ -4,6 +4,7 @@ import { CreateFlightDto } from '../dto/create-flight.dto';
 import { FlightResponseDto } from '../dto/flight-response.dto';
 import { Flight } from '@prisma/client';
 import { UpdateFlightDto } from '../dto/update-flight.dto';
+import { DeleteResponseDto } from '../dto/delete-response.dto';
 
 @Injectable()
 export class FlightsService{
@@ -90,5 +91,20 @@ export class FlightsService{
 
         //return mapped response
         return this.mapToResponseDto(updatedFlight);
+    }
+
+    //method to delete a flight
+    async deleteFlight(id: number): Promise<DeleteResponseDto> {
+
+        const existingFlight = await this.flightRepository.findById(id);
+        if(!existingFlight){
+            throw new NotFoundException('Flight does not exist');
+        }
+
+        await this.flightRepository.delete(id);
+
+        return {
+            message: 'Flight deleted successfully',
+        }
     }
 }

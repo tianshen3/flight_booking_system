@@ -58,4 +58,13 @@ export class FlightRepository {
             data,
         });
     }
+
+    //method to delete a flight
+    async delete(id: number){
+        return this.prisma.flight.delete({
+            where: {
+                id,
+            },
+        });
+    }
 }
