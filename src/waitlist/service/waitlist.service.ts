@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { WaitlistRepository } from '../repository/waitlist.repository';
 import { FlightRepository } from 'src/flights/repositories/flight.repository';
 import { UserRepository } from 'src/users/repositories/user.repository';
@@ -18,10 +18,13 @@ export class WaitlistService{
     ){}
 
     //method to join the waitlist
-    async joinWaitlist(dto: JoinWaitlistDto): Promise<WaitlistResponseDto> {
+    async joinWaitlist(
+        dto: JoinWaitlistDto,
+        userId: number,
+    ): Promise<WaitlistResponseDto> {
 
         //validate the user
-        const user = await this.userRepository.findById(dto.userId);
+        const user = await this.userRepository.findById(userId);
         if(!user){
             throw new NotFoundException('User not found');
         }
@@ -34,7 +37,7 @@ export class WaitlistService{
 
         //checking if already in the queue
         const alreadyQueued = await this.waitlistRepository.exists(
-            dto.userId,
+            userId,
             dto.flightId,
         );
         if(alreadyQueued){
@@ -44,7 +47,7 @@ export class WaitlistService{
         
         //check the booking status of the user
         const confirmedBooking = await this.bookingRepository.findConfirmedBooking(
-            dto.userId,
+            userId,
             dto.flightId,
         );
         if(confirmedBooking){
@@ -59,7 +62,7 @@ export class WaitlistService{
         const waitlistEntry = await this.waitlistRepository.create({
             user: {
                 connect: {
-                    id: dto.userId,
+                    id: userId,
                 },
             },
             flight: {
@@ -73,7 +76,7 @@ export class WaitlistService{
         //now create the entry in the redis
         await this.waitlistRedisService.addUser(
             dto.flightId,
-            dto.userId,
+            userId,
             clvScore,
         );
 
@@ -84,7 +87,7 @@ export class WaitlistService{
 
         return {
             id: waitlistEntry.id,
-            userId: dto.userId,
+            userId: userId,
             flightId: dto.flightId,
             clvScore,
             position,
@@ -92,7 +95,10 @@ export class WaitlistService{
     }
 
     //method to leave the waitlist
-    async leaveWailtlist(id: number) {
+    async leaveWaitlist(
+        id: number,
+        userId: number,
+    ) {
 
         //finding waitlist entry in the 
         const waitlistEntry = await this.waitlistRepository.findById(id);
@@ -100,6 +106,13 @@ export class WaitlistService{
             throw new NotFoundException('Waitlist entry not found');
         }
 
+        //checking wheter the fetched waitlist belongs to the user or not
+        if(waitlistEntry.userId !== userId){
+            throw new ForbiddenException(
+                'You cannot remove another user from the waitlist'
+            );
+        }
+        
         //remove this from the postgres
         await this.waitlistRepository.remove(id);
 
