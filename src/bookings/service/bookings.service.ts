@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { BookingRepository } from '../repositories/booking.repository';
 import { UserRepository } from 'src/users/repositories/user.repository';
 import { FlightRepository } from 'src/flights/repositories/flight.repository';
@@ -32,11 +32,15 @@ export class BookingService{
             status: booking.status,
         }
     }
+
     //seat locking and booking
-    async lockSeat(lockSeatDto: LockSeatDto): Promise<LockSeatResponseDto> {
+    async lockSeat(
+        lockSeatDto: LockSeatDto,
+        userId: number,
+    ): Promise<LockSeatResponseDto> {
 
         //destructure of lockSeatDto
-        const { userId, flightId, seatId } = lockSeatDto;
+        const { flightId, seatId } = lockSeatDto;
 
         //checking user existence
         const user = await this.userRepository.findById(userId);
@@ -104,11 +108,18 @@ export class BookingService{
     //for confirm booking
     async confirmBooking(
         bookingId: number,
+        userId: number,
     ): Promise<BookingResponseDto> {
         const booking = await this.bookingRepository.findById(bookingId);
 
         if(!booking){
             throw new NotFoundException('Booking not found');
+        }
+
+        if(booking.userId !== userId){
+            throw new ForbiddenException(
+                'You cannot confirm another user booking',
+            );
         }
 
         if (booking.status !== BookingStatus.LOCKED) {
@@ -148,12 +159,21 @@ export class BookingService{
     }
 
     //cancelling a booking
-    async cancelBooking(bookingId: number): Promise<BookingResponseDto> {
+    async cancelBooking(
+        bookingId: number,
+        userId: number,
+    ): Promise<BookingResponseDto> {
 
         //find booking with the given id
         const booking = await this.bookingRepository.findById(bookingId);
         if(!booking){
             throw new NotFoundException('Booking not Found');
+        }
+
+        if (booking.userId !== userId) {
+            throw new ForbiddenException(
+                'You cannot cancel another user booking',
+            );
         }
 
         //validating the booking status
@@ -197,12 +217,21 @@ export class BookingService{
     }
 
     //booking query
-    async getBookingById(bookingId: number): Promise<BookingResponseDto> {
+    async getBookingById(
+        bookingId: number,
+        userId: number,
+    ): Promise<BookingResponseDto> {
 
         //find the booking
         const booking = await this.bookingRepository.findById(bookingId);
         if(!booking){
             throw new NotFoundException('Booking not Found');
+        }
+
+        if(booking.userId !== userId){
+            throw new ForbiddenException(
+                'You are not allowed to access this booking',
+            );
         }
 
         return this.maptoResponseDto(booking);
