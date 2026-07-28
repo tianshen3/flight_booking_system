@@ -85,4 +85,38 @@ export class BookingRepository {
             },
         });
     }
+
+    //find all bookings for Admin with optional filters
+    async findAllBookings(flightId?: number, status?: BookingStatus) {
+        return this.prisma.booking.findMany({
+            where: {
+                ...(flightId ? { flightId } : {}),
+                ...(status ? { status } : {}),
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+                flight: {
+                    select: {
+                        id: true,
+                        flightNumber: true,
+                    },
+                },
+                seat: {
+                    select: {
+                        id: true,
+                        seatNumber: true,
+                    },
+                },
+            },
+        });
+    }
 }

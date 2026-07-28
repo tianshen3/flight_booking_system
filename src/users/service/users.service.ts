@@ -14,6 +14,8 @@ export class UsersService {
             name: user.name,
             email: user.email,
             clvScore: user.clvScore,
+            role: user.role,
+            isActive: user.isActive,
             createdAt: user.createdAt,
         };
     }

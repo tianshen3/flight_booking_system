@@ -242,5 +242,49 @@ export class BookingService{
         const bookings = await this.bookingRepository.findUserBookings(userId);
 
         return bookings.map((booking) => this.maptoResponseDto(booking));
-    } 
+    }
+
+    // Admin: get all system bookings with optional filters
+    async getAllBookingsAdmin(flightId?: number, status?: BookingStatus) {
+        return this.bookingRepository.findAllBookings(flightId, status);
+    }
+
+    // Admin: force cancel any booking
+    async adminCancelBooking(bookingId: number) {
+        const booking = await this.bookingRepository.findById(bookingId);
+        if (!booking) {
+            throw new NotFoundException('Booking not found');
+        }
+
+        if (booking.status === BookingStatus.CANCELLED || booking.status === BookingStatus.EXPIRED) {
+            throw new BadRequestException(`Cannot cancel a ${booking.status.toLowerCase()} booking`);
+        }
+
+        const cancelledBooking = await this.bookingRepository.updateStatus(
+            booking.id,
+            BookingStatus.CANCELLED,
+        );
+
+        this.notificationService.sendBookingCancellation(
+            cancelledBooking.userId,
+            cancelledBooking.id,
+        );
+
+        await this.seatRepository.updateSeatStatus(
+            booking.seatId,
+            SeatStatus.AVAILABLE,
+        );
+
+        await this.seatReassignmentService.assignSeat(
+            booking.flightId,
+            booking.seatId,
+        );
+
+        await this.seatLockService.releaseLock(
+            booking.flightId,
+            booking.seatId,
+        );
+
+        return this.maptoResponseDto(cancelledBooking);
+    }
 }

@@ -9,6 +9,7 @@ import { BookingModule } from './bookings/bookings.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { AuthModule } from './auth/auth.module';
     FlightsModule,
     BookingModule,
     WaitlistModule,
-    AuthModule
+    AuthModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

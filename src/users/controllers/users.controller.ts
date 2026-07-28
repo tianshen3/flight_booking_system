@@ -29,7 +29,9 @@ export class UsersController {
     constructor(private readonly userServices: UsersService) {}
 
 
-    //get all the users
+    //get all the users (Admin only)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Get()
     async getAllUsers(): Promise<UserResponseDto[]> {
         return this.userServices.getAllUsers();
