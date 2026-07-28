@@ -25,7 +25,7 @@ import { NotificationModule } from 'src/notifications/notifications.module';
         SeatLockService,
         BookingCleanupService,
     ],
-    exports: [BookingRepository],
+    exports: [BookingRepository, SeatLockService],
 })
 
 export class BookingModule{}

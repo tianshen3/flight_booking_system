@@ -6,6 +6,7 @@ import { SeatRepository } from 'src/flights/repositories/seats.repository';
 import { UserRepository } from 'src/users/repositories/user.repository';
 import { BookingStatus, SeatStatus } from '@prisma/client';
 import { NotificationService } from 'src/notifications/service/notifications.service';
+import { SeatLockService } from 'src/bookings/service/seat-lock.service';
 
 @Injectable()
 export class SeatReassignmentService{
@@ -16,6 +17,7 @@ export class SeatReassignmentService{
         private readonly seatRepository: SeatRepository,
         private readonly userRepository: UserRepository,
         private readonly notificationService: NotificationService,
+        private readonly seatLockService: SeatLockService,
     ){}
 
     //method to assign seat
@@ -78,18 +80,29 @@ export class SeatReassignmentService{
             return null;
         }
 
-        //this seat will be assigned to this user
+        //acquire redis seat lock for 5 minutes for this user
+        const locked = await this.seatLockService.lockSeat(
+            flightId,
+            seatId,
+            userId,
+        );
+
+        if(!locked){
+            return null;
+        }
+
+        //this seat will be temporarily locked and reserved for this user
         const booking = await this.bookingRepository.create({
             userId,
             flightId,
             seatId,
-            status: BookingStatus.CONFIRMED,
+            status: BookingStatus.LOCKED,
         });
 
-        //updating the seatstatus
+        //updating the seatstatus to LOCKED
         await this.seatRepository.updateSeatStatus(
             seatId,
-            SeatStatus.BOOKED 
+            SeatStatus.LOCKED 
         );
 
         //remove the user from the waitlist of postgres and redis
@@ -99,10 +112,13 @@ export class SeatReassignmentService{
             userId,
         );
 
-        //notification for the seat reassignment
+        //notification for the seat reassignment with 5 minutes TTL
         this.notificationService.sendWaitlistPromotionNotification(
             userId,
             flightId,
+            seatId,
+            booking.id,
+            5,
         );
 
         return booking;

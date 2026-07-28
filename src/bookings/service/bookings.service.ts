@@ -194,21 +194,20 @@ export class BookingService{
             cancelledBooking.id,
         )
 
-        //updating the seat status to avaliable
+        //updating the seat status to available
         await this.seatRepository.updateSeatStatus(
             booking.seatId,
             SeatStatus.AVAILABLE,
-        )
+        );
 
-        //after this seat becomes available and the redis lock is released
-        //try to assign this seat to the customer wiht highest clvScore
-        await this.seatReassignmentService.assignSeat(
+        //releasing the redis lock of the cancelled user
+        await this.seatLockService.releaseLock(
             booking.flightId,
             booking.seatId,
-        )
+        );
 
-        //releasing the redis lock
-        await this.seatLockService.releaseLock(
+        //after seat lock is released, try to reassign to highest clvScore user
+        await this.seatReassignmentService.assignSeat(
             booking.flightId,
             booking.seatId,
         );
@@ -275,12 +274,12 @@ export class BookingService{
             SeatStatus.AVAILABLE,
         );
 
-        await this.seatReassignmentService.assignSeat(
+        await this.seatLockService.releaseLock(
             booking.flightId,
             booking.seatId,
         );
 
-        await this.seatLockService.releaseLock(
+        await this.seatReassignmentService.assignSeat(
             booking.flightId,
             booking.seatId,
         );

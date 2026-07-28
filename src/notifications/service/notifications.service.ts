@@ -31,10 +31,16 @@ export class NotificationService{
     sendWaitlistPromotionNotification(
         userId: number,
         flightId: number,
+        seatId: number,
+        bookingId: number,
+        expiresInMinutes: number = 5,
     ){
         this.consoleNotificationProvider.sendWaitlistPromotion(
             userId,
             flightId,
+            seatId,
+            bookingId,
+            expiresInMinutes,
         );
     }
 

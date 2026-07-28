@@ -24,10 +24,13 @@ export class ConsoleNotificationProvider{
     sendWaitlistPromotion(
         userId: number,
         flightId: number,
+        seatId: number,
+        bookingId: number,
+        expiresInMinutes: number = 5,
     ) {
         console.log(
-            `[WAITLIST PROMOTION] User ${userId} has been promoted from the waitlist for Flight ${flightId}.`,
-        )
+            `[WAITLIST PROMOTION] User ${userId}: Seat ${seatId} on Flight ${flightId} is reserved under Booking ${bookingId}. Complete payment within ${expiresInMinutes} minutes to confirm.`,
+        );
     }
 
     sendSeatReassignment(
