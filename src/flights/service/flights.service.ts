@@ -6,6 +6,18 @@ import { Flight } from '@prisma/client';
 import { UpdateFlightDto } from '../dto/update-flight.dto';
 import { DeleteResponseDto } from '../dto/delete-response.dto';
 
+const PRICING_MATRIX = {
+  WINDOW: 5000, // Seats A, F
+  AISLE: 4000,  // Seats C, D
+  MIDDLE: 3000, // Seats B, E
+};
+
+function calculateSeatPrice(columnLetter: string): number {
+  if (['A', 'F'].includes(columnLetter)) return PRICING_MATRIX.WINDOW;
+  if (['C', 'D'].includes(columnLetter)) return PRICING_MATRIX.AISLE;
+  return PRICING_MATRIX.MIDDLE;
+}
+
 @Injectable()
 export class FlightsService{
     constructor(private readonly flightRepository: FlightRepository){}
@@ -29,12 +41,24 @@ export class FlightsService{
             throw new ConflictException('Flight already exists');
         }
 
+        const seatLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+        const seats: { seatNumber: string; price: number }[] = [];
+        for (let row = 1; row <= 20; row++) {
+            for (const col of seatLetters) {
+                seats.push({
+                    seatNumber: `${row}${col}`,
+                    price: calculateSeatPrice(col),
+                });
+            }
+        }
+
         const flight = await this.flightRepository.create({
             flightNumber: createFlightDto.flightNumber,
             origin: createFlightDto.origin,
             destination: createFlightDto.destination,
             departureTime: new Date(createFlightDto.departureTime),
             arrivalTime: new Date(createFlightDto.arrivalTime),
+            seats,
         });
 
         return this.mapToResponseDto(flight);
@@ -74,7 +98,7 @@ export class FlightsService{
         // if the time is there it is in string and there is need of date type for prisma
         const updateData = {
             ...updateFlightDto,
-            deparutureTime: updateFlightDto.departureTime
+            departureTime: updateFlightDto.departureTime
                 ? new Date(updateFlightDto.departureTime)
                 : undefined,
             

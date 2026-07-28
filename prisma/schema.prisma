@@ -48,6 +48,7 @@ model Seat {
   id         Int        @id @default(autoincrement())
   flightId   Int        @map("flight_id")
   seatNumber String     @map("seat_number")
+  price      Int        @default(0)
   status     SeatStatus @default(AVAILABLE)
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")

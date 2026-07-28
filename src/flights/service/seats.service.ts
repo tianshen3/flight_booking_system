@@ -16,6 +16,7 @@ export class SeatsService{
             id: seat.id,
             flightId: seat.flightId,
             seatNumber: seat.seatNumber,
+            price: seat.price,
             status: seat.status,
         }
     }

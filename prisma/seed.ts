@@ -1,5 +1,6 @@
 import {
   PrismaClient,
+  Prisma,
   User,
   Flight,
   Seat,
@@ -14,26 +15,22 @@ const prisma = new PrismaClient();
 
 
 async function seedUsers(): Promise<User[]> {
-  const users: User[] = [];
-
-  //hashed password for all the seeded users
-  const hashedPassword = await bcrypt.hash('password123', 10)
+  const hashedPassword = await bcrypt.hash('password123', 10);
+  const usersData: Prisma.UserCreateManyInput[] = [];
 
   for (let i = 1; i <= 100; i++) {
-    const user = await prisma.user.create({
-      data: {
-        name: `User ${i}`,
-        email: `user${i}@aerolock.dev`,
-        password: hashedPassword,
-        clvScore: Math.floor(Math.random() * 1000) + 1,
-      },
+    usersData.push({
+      name: `User ${i}`,
+      email: `user${i}@aerolock.dev`,
+      password: hashedPassword,
+      clvScore: Math.floor(Math.random() * 1000) + 1,
     });
-
-    users.push(user);
   }
 
-  console.log(`✅ Created ${users.length} users`);
+  await prisma.user.createMany({ data: usersData });
+  const users = await prisma.user.findMany({ orderBy: { id: 'asc' } });
 
+  console.log(`✅ Created ${users.length} users`);
   return users;
 }
 
@@ -78,42 +75,47 @@ async function seedFlights(): Promise<Flight[]> {
     },
   ];
 
-  const flights: Flight[] = [];
-
-  for (const flight of flightData) {
-    const createdFlight = await prisma.flight.create({
-      data: flight,
-    });
-
-    flights.push(createdFlight);
-  }
+  await prisma.flight.createMany({ data: flightData });
+  const flights = await prisma.flight.findMany({ orderBy: { id: 'asc' } });
 
   console.log(`✅ Created ${flights.length} flights`);
-
   return flights;
 }
 
-async function seedSeats(flights: Flight[]): Promise<Seat[]> {
-  const seats: Seat[] = [];
+const PRICING_MATRIX = {
+  WINDOW: 5000, // Seats A, F
+  AISLE: 4000,  // Seats C, D
+  MIDDLE: 3000, // Seats B, E
+};
 
+function calculateSeatPrice(columnLetter: string): number {
+  if (['A', 'F'].includes(columnLetter)) return PRICING_MATRIX.WINDOW;
+  if (['C', 'D'].includes(columnLetter)) return PRICING_MATRIX.AISLE;
+  return PRICING_MATRIX.MIDDLE;
+}
+
+async function seedSeats(flights: Flight[]): Promise<Seat[]> {
   const seatLetters = ["A", "B", "C", "D", "E", "F"];
+  const seatsData: Prisma.SeatCreateManyInput[] = [];
 
   for (const flight of flights) {
     for (let row = 1; row <= 20; row++) {
       for (const letter of seatLetters) {
-        const seat = await prisma.seat.create({
-          data: {
-            flightId: flight.id,
-            seatNumber: `${row}${letter}`,
-            status: SeatStatus.AVAILABLE,
-          },
+        seatsData.push({
+          flightId: flight.id,
+          seatNumber: `${row}${letter}`,
+          price: calculateSeatPrice(letter),
+          status: SeatStatus.AVAILABLE,
         });
-
-        seats.push(seat);
       }
     }
   }
 
+  await prisma.seat.createMany({
+    data: seatsData,
+  });
+
+  const seats = await prisma.seat.findMany({ orderBy: { id: 'asc' } });
   console.log(`✅ Created ${seats.length} seats`);
 
   return seats;
@@ -125,6 +127,8 @@ async function seedBookings(
   seats: Seat[]
 ): Promise<void> {
   const bookingsPerFlight = 10;
+  const bookingsData: Prisma.BookingCreateManyInput[] = [];
+  const bookedSeatIds: number[] = [];
 
   for (const flight of flights) {
     const flightSeats = seats
@@ -138,28 +142,23 @@ async function seedBookings(
 
       const seat = flightSeats[i];
 
-      await prisma.booking.create({
-        data: {
-          userId: user.id,
-          flightId: flight.id,
-          seatId: seat.id,
-          status: BookingStatus.CONFIRMED,
-        },
+      bookingsData.push({
+        userId: user.id,
+        flightId: flight.id,
+        seatId: seat.id,
+        status: BookingStatus.CONFIRMED,
       });
 
-      await prisma.seat.update({
-        where: {
-          id: seat.id,
-        },
-        data: {
-          status: SeatStatus.BOOKED,
-        },
-      });
-
-      // Keep the in-memory copy in sync
+      bookedSeatIds.push(seat.id);
       seat.status = SeatStatus.BOOKED;
     }
   }
+
+  await prisma.booking.createMany({ data: bookingsData });
+  await prisma.seat.updateMany({
+    where: { id: { in: bookedSeatIds } },
+    data: { status: SeatStatus.BOOKED },
+  });
 
   console.log("✅ Created bookings");
 }
@@ -168,7 +167,6 @@ async function seedWaitlist(
   users: User[],
   flights: Flight[]
 ): Promise<void> {
-  // Find users that already have bookings
   const bookings = await prisma.booking.findMany({
     select: {
       userId: true,
@@ -178,21 +176,21 @@ async function seedWaitlist(
   const bookedUserIds = new Set(bookings.map((b) => b.userId));
 
   let flightIndex = 0;
+  const waitlistData: Prisma.WaitlistCreateManyInput[] = [];
 
   for (const user of users) {
     if (bookedUserIds.has(user.id)) continue;
 
-    await prisma.waitlist.create({
-      data: {
-        userId: user.id,
-        flightId: flights[flightIndex].id,
-        clvScore: user.clvScore,
-      },
+    waitlistData.push({
+      userId: user.id,
+      flightId: flights[flightIndex].id,
+      clvScore: user.clvScore,
     });
 
-    // Distribute waitlist entries across flights
     flightIndex = (flightIndex + 1) % flights.length;
   }
+
+  await prisma.waitlist.createMany({ data: waitlistData });
 
   console.log("✅ Created waitlist entries");
 }

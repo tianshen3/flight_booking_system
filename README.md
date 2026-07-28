@@ -1,5 +1,9 @@
 # AeroLock Server
 
+Short description: A NestJS backend for high-concurrency flight seat booking with Redis locks, Prisma/PostgreSQL persistence, JWT auth, and waitlist support.
+
+Topics: nestjs, prisma, postgres, redis, authentication, booking-system, waitlist, api, typescript
+
 AeroLock is a NestJS-based backend for a high-concurrency flight seat booking system. The service combines PostgreSQL persistence, Redis-backed seat locks, JWT authentication, role-based access control, and an intelligent waitlist flow for customers who miss out on initial availability.
 
 ## Overview

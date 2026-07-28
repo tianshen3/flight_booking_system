@@ -13,9 +13,20 @@ export class FlightRepository {
         destination: string;
         departureTime: Date;
         arrivalTime: Date;
+        seats?: { seatNumber: string; price: number }[];
     }) {
+        const { seats, ...flightData } = data;
         return this.prisma.flight.create({
-            data,
+            data: {
+                ...flightData,
+                ...(seats && seats.length > 0
+                    ? {
+                        seats: {
+                            create: seats,
+                        },
+                      }
+                    : {}),
+            },
         });
     }
 
