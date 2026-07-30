@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .card { fill: #ffffff; stroke: #e2e8f0; stroke-width: 2; rx: 10px; }
+      .card-nestjs { fill: #ffffff; stroke: #f43f5e; stroke-width: 2; rx: 12px; }
+      .card-redis { fill: #ffffff; stroke: #ef4444; stroke-width: 2; rx: 10px; }
+      .card-pg { fill: #ffffff; stroke: #3b82f6; stroke-width: 2; rx: 10px; }
+      .title { font-family: 'Inter', system-ui, sans-serif; font-weight: 800; font-size: 22px; fill: #0f172a; }
+      .subtitle { font-family: 'Inter', system-ui, sans-serif; font-size: 13px; fill: #64748b; }
+      .layer-title { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 13px; fill: #475569; letter-spacing: 0.5px; }
+      .node-title { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 14px; fill: #1e293b; }
+      .node-desc { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: #64748b; }
+      .badge { font-family: 'Inter', system-ui, sans-serif; font-weight: 600; font-size: 11px; fill: #ffffff; }
+      .line { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-dasharray: none; }
+      .line-accent { stroke: #3b82f6; stroke-width: 2.5; fill: none; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#3b82f6"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="620" class="bg"/>
+
+  <!-- Header -->
+  <text x="40" y="42" class="title">AeroLock System Architecture</text>
+  <text x="40" y="62" class="subtitle">High-concurrency flight seat reservation service built with NestJS, Redis, and PostgreSQL</text>
+
+  <!-- LAYER 1: CLIENTS -->
+  <g transform="translate(40, 95)">
+    <text x="0" y="0" class="layer-title">CLIENT &amp; API LAYER</text>
+    
+    <!-- Client Card -->
+    <rect x="0" y="12" width="280" height="65" class="card"/>
+    <text x="20" y="38" class="node-title">Web &amp; Mobile Clients</text>
+    <text x="20" y="56" class="node-desc">REST Requests (HTTP / JSON)</text>
+
+    <!-- Swagger Card -->
+    <rect x="320" y="12" width="280" height="65" class="card"/>
+    <text x="340" y="38" class="node-title">OpenAPI / Swagger UI</text>
+    <text x="340" y="56" class="node-desc">Interactive Docs (/api/docs)</text>
+
+    <!-- Admin Card -->
+    <rect x="640" y="12" width="280" height="65" class="card"/>
+    <text x="660" y="38" class="node-title">Admin Dashboard</text>
+    <text x="660" y="56" class="node-desc">System Stats &amp; Lock Overrides</text>
+  </g>
+
+  <!-- Connectors Layer 1 -> Layer 2 -->
+  <line x1="180" y1="172" x2="180" y2="215" class="line" marker-end="url(#arrow)"/>
+  <line x1="460" y1="172" x2="460" y2="215" class="line" marker-end="url(#arrow)"/>
+  <line x1="780" y1="172" x2="780" y2="215" class="line" marker-end="url(#arrow)"/>
+
+  <!-- LAYER 2: NESTJS BACKEND MONOLITH -->
+  <g transform="translate(40, 220)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="920" height="210" class="card-nestjs"/>
+    
+    <!-- Title bar -->
+    <rect x="0" y="0" width="920" height="36" fill="#fff1f2" rx="10"/>
+    <rect x="0" y="24" width="920" height="12" fill="#fff1f2"/>
+    <text x="20" y="23" font-family="Inter, sans-serif" font-weight="800" font-size="13" fill="#e11d48" letter-spacing="0.5">
+      NESTJS BACKEND APPLICATION (Port 3000)
+    </text>
+    <text x="900" y="23" font-family="Inter, sans-serif" font-weight="600" font-size="11" fill="#9f1239" text-anchor="end">
+      JWT Guards | Validation | Health (/health)
+    </text>
+
+    <!-- Modules Grid -->
+    <!-- Auth Module -->
+    <g transform="translate(20, 52)">
+      <rect x="0" y="0" width="265" height="65" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+      <text x="15" y="26" class="node-title">Auth &amp; Users Module</text>
+      <text x="15" y="46" class="node-desc">JWT Auth, Password Hash, CLV Scores</text>
+    </g>
+
+    <!-- Booking Module -->
+    <g transform="translate(305, 52)">
+      <rect x="0" y="0" width="310" height="65" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="15" y="26" class="node-title" fill="#1e40af">Booking &amp; Seat Lock Module</text>
+      <text x="15" y="46" class="node-desc">5-Min Redis Lock, Confirm &amp; Expire Cron</text>
+    </g>
+
+    <!-- Waitlist Module -->
+    <g transform="translate(635, 52)">
+      <rect x="0" y="0" width="265" height="65" rx="8" fill="#faf5ff" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="15" y="26" class="node-title" fill="#6b21a8">CLV Waitlist Module</text>
+      <text x="15" y="46" class="node-desc">Redis Priority Queue &amp; Auto-Reassign</text>
+    </g>
+
+    <!-- Flights Module -->
+    <g transform="translate(20, 130)">
+      <rect x="0" y="0" width="425" height="65" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="15" y="26" class="node-title" fill="#15803d">Flights &amp; Seats Module</text>
+      <text x="15" y="46" class="node-desc">Flight Catalogs, Route Schedules, Seat Inventories</text>
+    </g>
+
+    <!-- Admin & Health Module -->
+    <g transform="translate(465, 130)">
+      <rect x="0" y="0" width="435" height="65" rx="8" fill="#fff7ed" stroke="#f97316" stroke-width="1.5"/>
+      <text x="15" y="26" class="node-title" fill="#c2410c">Admin &amp; System Health</text>
+      <text x="15" y="46" class="node-desc">Analytics (/admin/stats), Health Checks (DB &amp; Redis)</text>
+    </g>
+  </g>
+
+  <!-- Connectors Layer 2 -> Layer 3 -->
+  <line x1="280" y1="430" x2="280" y2="475" class="line-accent" marker-end="url(#arrow-blue)"/>
+  <line x1="720" y1="430" x2="720" y2="475" class="line-accent" marker-end="url(#arrow-blue)"/>
+
+  <!-- LAYER 3: STORAGE INFRASTRUCTURE -->
+  <g transform="translate(40, 480)">
+    <text x="0" y="0" class="layer-title">STORAGE INFRASTRUCTURE</text>
+
+    <!-- Redis Store -->
+    <g transform="translate(0, 12)">
+      <rect x="0" y="0" width="440" height="90" class="card-redis"/>
+      <text x="20" y="32" class="node-title" fill="#991b1b">Redis 7.x (In-Memory Store)</text>
+      <text x="20" y="52" class="node-desc">• Seat Locks: seat:{flightId}:{seatId} (TTL 300s)</text>
+      <text x="20" y="70" class="node-desc">• Priority Waitlist: waitlist:{flightId} (Sorted Set by CLV)</text>
+    </g>
+
+    <!-- PostgreSQL Store -->
+    <g transform="translate(480, 12)">
+      <rect x="0" y="0" width="440" height="90" class="card-pg"/>
+      <text x="20" y="32" class="node-title" fill="#1e40af">PostgreSQL 16.x (Relational DB via Prisma)</text>
+      <text x="20" y="52" class="node-desc">• Canonical Tables: Users, Flights, Seats, Bookings, Waitlist</text>
+      <text x="20" y="70" class="node-desc">• Foreign key constraints &amp; transactional integrity</text>
+    </g>
+  </g>
+
+</svg>

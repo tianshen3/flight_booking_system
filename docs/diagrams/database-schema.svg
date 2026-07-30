@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .table-card { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 8px; }
+      .header-user { fill: #4f46e5; rx: 6px; }
+      .header-flight { fill: #0d9488; rx: 6px; }
+      .header-seat { fill: #2563eb; rx: 6px; }
+      .header-booking { fill: #9333ea; rx: 6px; }
+      .header-waitlist { fill: #d97706; rx: 6px; }
+      .header-text { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 13px; fill: #ffffff; }
+      .field-pk { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 11px; fill: #ef4444; }
+      .field-fk { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 11px; fill: #d97706; }
+      .field-name { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; fill: #1e293b; }
+      .field-type { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; fill: #64748b; }
+      .title { font-family: 'Inter', system-ui, sans-serif; font-weight: 800; font-size: 22px; fill: #0f172a; }
+      .subtitle { font-family: 'Inter', system-ui, sans-serif; font-size: 13px; fill: #64748b; }
+      .rel-line { stroke: #94a3b8; stroke-width: 2; stroke-linecap: round; }
+      .rel-text { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 11px; fill: #64748b; }
+    </style>
+    <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6">
+      <circle cx="5" cy="5" r="4" fill="#64748b"/>
+    </marker>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="560" class="bg"/>
+
+  <!-- Header -->
+  <text x="40" y="42" class="title">AeroLock Database Schema (ERD)</text>
+  <text x="40" y="62" class="subtitle">PostgreSQL relational models, entity foreign keys, and cardinalities</text>
+
+  <!-- ENTITY 1: USER -->
+  <g transform="translate(40, 95)">
+    <rect width="250" height="190" class="table-card"/>
+    <rect width="250" height="32" class="header-user"/>
+    <text x="14" y="21" class="header-text">User (users)</text>
+
+    <!-- Fields -->
+    <g transform="translate(14, 48)">
+      <text x="0" y="0" class="field-pk">PK</text>
+      <text x="30" y="0" class="field-name">id</text>
+      <text x="160" y="0" class="field-type">Int</text>
+
+      <text x="0" y="24" class="field-name">name</text>
+      <text x="160" y="24" class="field-type">String</text>
+
+      <text x="0" y="48" class="field-name">email (UQ)</text>
+      <text x="160" y="48" class="field-type">String</text>
+
+      <text x="0" y="72" class="field-name">clvScore</text>
+      <text x="160" y="72" class="field-type">Int</text>
+
+      <text x="0" y="96" class="field-name">role</text>
+      <text x="160" y="96" class="field-type">Enum</text>
+
+      <text x="0" y="120" class="field-name">isActive</text>
+      <text x="160" y="120" class="field-type">Boolean</text>
+    </g>
+  </g>
+
+  <!-- ENTITY 2: BOOKING -->
+  <g transform="translate(355, 95)">
+    <rect width="250" height="190" class="table-card"/>
+    <rect width="250" height="32" class="header-booking"/>
+    <text x="14" y="21" class="header-text">Booking (bookings)</text>
+
+    <!-- Fields -->
+    <g transform="translate(14, 48)">
+      <text x="0" y="0" class="field-pk">PK</text>
+      <text x="30" y="0" class="field-name">id</text>
+      <text x="160" y="0" class="field-type">Int</text>
+
+      <text x="0" y="24" class="field-fk">FK</text>
+      <text x="30" y="24" class="field-name">userId</text>
+      <text x="160" y="24" class="field-type">Int</text>
+
+      <text x="0" y="48" class="field-fk">FK</text>
+      <text x="30" y="48" class="field-name">flightId</text>
+      <text x="160" y="48" class="field-type">Int</text>
+
+      <text x="0" y="72" class="field-fk">FK</text>
+      <text x="30" y="72" class="field-name">seatId</text>
+      <text x="160" y="72" class="field-type">Int</text>
+
+      <text x="0" y="96" class="field-name">status</text>
+      <text x="160" y="96" class="field-type">Enum</text>
+
+      <text x="0" y="120" class="field-name">createdAt</text>
+      <text x="160" y="120" class="field-type">DateTime</text>
+    </g>
+  </g>
+
+  <!-- ENTITY 3: FLIGHT -->
+  <g transform="translate(670, 95)">
+    <rect width="250" height="190" class="table-card"/>
+    <rect width="250" height="32" class="header-flight"/>
+    <text x="14" y="21" class="header-text">Flight (flights)</text>
+
+    <!-- Fields -->
+    <g transform="translate(14, 48)">
+      <text x="0" y="0" class="field-pk">PK</text>
+      <text x="30" y="0" class="field-name">id</text>
+      <text x="160" y="0" class="field-type">Int</text>
+
+      <text x="0" y="24" class="field-name">flightNumber</text>
+      <text x="160" y="24" class="field-type">String</text>
+
+      <text x="0" y="48" class="field-name">origin</text>
+      <text x="160" y="48" class="field-type">String</text>
+
+      <text x="0" y="72" class="field-name">destination</text>
+      <text x="160" y="72" class="field-type">String</text>
+
+      <text x="0" y="96" class="field-name">departureTime</text>
+      <text x="160" y="96" class="field-type">DateTime</text>
+
+      <text x="0" y="120" class="field-name">arrivalTime</text>
+      <text x="160" y="120" class="field-type">DateTime</text>
+    </g>
+  </g>
+
+  <!-- ENTITY 4: WAITLIST -->
+  <g transform="translate(40, 340)">
+    <rect width="250" height="170" class="table-card"/>
+    <rect width="250" height="32" class="header-waitlist"/>
+    <text x="14" y="21" class="header-text">Waitlist (waitlist)</text>
+
+    <!-- Fields -->
+    <g transform="translate(14, 48)">
+      <text x="0" y="0" class="field-pk">PK</text>
+      <text x="30" y="0" class="field-name">id</text>
+      <text x="160" y="0" class="field-type">Int</text>
+
+      <text x="0" y="24" class="field-fk">FK</text>
+      <text x="30" y="24" class="field-name">flightId</text>
+      <text x="160" y="24" class="field-type">Int</text>
+
+      <text x="0" y="48" class="field-fk">FK</text>
+      <text x="30" y="48" class="field-name">userId</text>
+      <text x="160" y="48" class="field-type">Int</text>
+
+      <text x="0" y="72" class="field-name">clvScore</text>
+      <text x="160" y="72" class="field-type">Int</text>
+
+      <text x="0" y="96" class="field-name">createdAt</text>
+      <text x="160" y="96" class="field-type">DateTime</text>
+    </g>
+  </g>
+
+  <!-- ENTITY 5: SEAT -->
+  <g transform="translate(670, 340)">
+    <rect width="250" height="170" class="table-card"/>
+    <rect width="250" height="32" class="header-seat"/>
+    <text x="14" y="21" class="header-text">Seat (seats)</text>
+
+    <!-- Fields -->
+    <g transform="translate(14, 48)">
+      <text x="0" y="0" class="field-pk">PK</text>
+      <text x="30" y="0" class="field-name">id</text>
+      <text x="160" y="0" class="field-type">Int</text>
+
+      <text x="0" y="24" class="field-fk">FK</text>
+      <text x="30" y="24" class="field-name">flightId</text>
+      <text x="160" y="24" class="field-type">Int</text>
+
+      <text x="0" y="48" class="field-name">seatNumber</text>
+      <text x="160" y="48" class="field-type">String</text>
+
+      <text x="0" y="72" class="field-name">price</text>
+      <text x="160" y="72" class="field-type">Int</text>
+
+      <text x="0" y="96" class="field-name">status</text>
+      <text x="160" y="96" class="field-type">Enum</text>
+    </g>
+  </g>
+
+  <!-- RELATIONSHIP LINES -->
+  <!-- User -> Booking (1:N) -->
+  <line x1="290" y1="180" x2="355" y2="180" class="rel-line" marker-start="url(#dot)" marker-end="url(#arrow)"/>
+
+  <!-- Flight -> Booking (1:N) -->
+  <line x1="670" y1="180" x2="605" y2="180" class="rel-line" marker-start="url(#dot)" marker-end="url(#arrow)"/>
+
+  <!-- Flight -> Seat (1:N) -->
+  <line x1="795" y1="285" x2="795" y2="340" class="rel-line" marker-start="url(#dot)" marker-end="url(#arrow)"/>
+
+  <!-- User -> Waitlist (1:N) -->
+  <line x1="165" y1="285" x2="165" y2="340" class="rel-line" marker-start="url(#dot)" marker-end="url(#arrow)"/>
+
+  <!-- Flight -> Waitlist (1:N) -->
+  <path d="M 670 240 L 315 240 L 315 380 L 290 380" class="rel-line" fill="none" marker-start="url(#dot)" marker-end="url(#arrow)"/>
+
+  <!-- Seat -> Booking (1:N) -->
+  <path d="M 670 410 L 580 410 L 580 285" class="rel-line" fill="none" marker-start="url(#dot)" marker-end="url(#arrow)"/>
+
+  <!-- Cardinality labels -->
+  <text x="295" y="174" class="rel-text">1</text>
+  <text x="340" y="174" class="rel-text">N</text>
+  <text x="655" y="174" class="rel-text">1</text>
+  <text x="615" y="174" class="rel-text">N</text>
+  <text x="802" y="300" class="rel-text">1</text>
+  <text x="802" y="330" class="rel-text">N</text>
+</svg>
