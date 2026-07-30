@@ -4,7 +4,9 @@ dist/
 build/
 coverage/
 .prisma/
+.vscode/
 
 PLANNING.md
 TASKS.md
 HANDOFF.md
+
