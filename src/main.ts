@@ -20,9 +20,53 @@ async function bootstrap() {
   );
   app.enableShutdownHooks();
 
+  const envCorsOrigin = configService.get<string>('CORS_ORIGIN', '');
+  const envOrigins = envCorsOrigin
+    ? envCorsOrigin.split(',').map((o) => o.trim()).filter(Boolean)
+    : [];
+
+  const allowedOrigins = Array.from(
+    new Set([
+      'https://aero-lock-web.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'http://localhost:3001',
+      'http://localhost:5000',
+      ...envOrigins,
+    ]),
+  );
+
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, Postman, server-to-server)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const normalizedOrigin = origin.replace(/\/$/, '');
+      const isAllowed =
+        allowedOrigins.some(
+          (allowed) => allowed.replace(/\/$/, '') === normalizedOrigin,
+        ) || /\.vercel\.app$/.test(normalizedOrigin);
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS origin not allowed: ${origin}`));
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+      'Access-Control-Allow-Headers',
+      'Access-Control-Request-Method',
+      'Access-Control-Request-Headers',
+    ],
   });
 
   const config = new DocumentBuilder()
